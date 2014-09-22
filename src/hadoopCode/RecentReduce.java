@@ -8,10 +8,10 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 
 public class RecentReduce extends
-		Reducer<Text, LongWritable, LongWritable, NullWritable> {
+		Reducer<Text, LongWritable, LongWritable, LongWritable> {
 
 	private LongWritable diff = new LongWritable();
-	private NullWritable myNull = NullWritable.get();
+	private LongWritable timestamp = new LongWritable();
 	
 	public void reduce(Text key, Iterable<LongWritable> values, Context context)
 			throws IOException, InterruptedException {
@@ -27,11 +27,14 @@ public class RecentReduce extends
 		}
 		System.out.format("v1 = %d v2= %d\n", v1.get(), v2.get());
 		
-		if (v1.get() > v2.get())
+		if (v1.get() > v2.get()) {
 			diff.set(v1.get() - v2.get());
-		else 
+			timestamp.set(v1.get());
+		}
+		else {
 			diff.set(v2.get() - v1.get());
-		
-		context.write(diff, myNull);
+			timestamp.set(v2.get());
+		}
+		context.write(timestamp, diff);
 	}
 }
