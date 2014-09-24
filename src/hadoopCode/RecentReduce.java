@@ -29,11 +29,11 @@ public class RecentReduce extends
 		
 		if (v1.get() > v2.get()) {
 			diff.set(v1.get() - v2.get());
-			timestamp.set(v1.get());
+			timestamp.set(v2.get());
 		}
 		else {
 			diff.set(v2.get() - v1.get());
-			timestamp.set(v2.get());
+			timestamp.set(v1.get());
 		}
 		context.write(timestamp, diff);
 	}

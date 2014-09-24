@@ -1,6 +1,7 @@
 package hadoopCode;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import mythrift.Annotation;
 import mythrift.Span;
@@ -15,10 +16,14 @@ import org.apache.thrift.transport.TMemoryBuffer;
 public class RecentMapper extends
 		Mapper<LongWritable, Text, Text, LongWritable> {
 
+	static final long duration = 900000; // 15 min in milisecs
 	static final String span1 = "parent process";
 	static final String span2 = "parent process";
 	static final String annot1 = "child start";
 	static final String annot2 = "child end";
+
+	static final long threshold = Calendar.getInstance().getTimeInMillis()
+			- duration;
 
 	private Span getSpanFromString(String s) {
 		TMemoryBuffer trans = new TMemoryBuffer(10);
@@ -44,9 +49,10 @@ public class RecentMapper extends
 		Span span = getSpanFromString(line);
 		if (span.name.equals(span1) || span.name.equals(span2)) {
 			for (Annotation a : span.annotations) {
-				if (a.value.equals(annot1) || a.value.equals(annot2)) {
-                    System.out.print(a.value + " ");
-                    System.out.println(a.timestamp);	
+				if ((a.value.equals(annot1) || a.value.equals(annot2))
+						&& ((a.timestamp / 1000) > threshold)) { // because timestamp in usec
+					System.out.print(a.value + " ");
+					System.out.println(a.timestamp);
 					id.set(Long.toString(span.trace_id) + ":"
 							+ Long.toString(span.id));
 					timestamp.set(a.timestamp);
