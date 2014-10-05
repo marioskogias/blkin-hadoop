@@ -24,7 +24,7 @@ public class Recent {
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(LongWritable.class);
 		
-		job.setOutputKeyClass(LongWritable.class);
+		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(LongWritable.class);
 
 		job.setMapperClass(RecentMapper.class);
@@ -44,13 +44,13 @@ public class Recent {
 		job = new Job(conf, "recent-sort");
 		job.setJarByClass(hadoopCode.Recent.class);
 
-		job.setMapOutputKeyClass(LongWritable.class);
+        job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(LongWritable.class);
 		
-		job.setOutputKeyClass(LongWritable.class);
-		job.setOutputValueClass(NullWritable.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(LongWritable.class);
 
-		job.setReducerClass(OrderReducer.class);
+		job.setReducerClass(AverageReducer.class);
 
 		job.setInputFormatClass(SequenceFileInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
